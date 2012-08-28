@@ -23,14 +23,15 @@
         #copyright { text-align: center; font-size: 80%; border-top: 1px solid; margin: 3em 7em 0 7em; }
         #copyright .note { font-style: italic; }
         </style>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     </head>
 <body>    
     <h1><a href="http://www.develer.com/" title="Develer"><img src="https://www.develer.com/pics/develer_logo.png" width="30%" alt="Develer" /></a> Develer FreeMyFeed</h1>
     <p><a href="https://github.com/rasky/freemyfeed"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a></p>
     <p>Bla bla bla.</p>
     <p>This simple service is powered by <a href="http://www.python.org">Python</a>, and its source code is <a href="https://github.com/rasky/freemyfeeds" title="Source code">available</a> under the MIT license.</p>
-	<div id="generate">
-		<form action="generate" method="post">
+	<div>
+		<form action="generate" method="post" id="generate">
 			<p>Feed URL:
 			<input type="text" name="url" value="" size="30" /></p>
 			<p>Username:
@@ -38,8 +39,29 @@
 			<p>Password:
 			<input type="password" name="pwd" value="", size="15" /></p>
 			<p><input type="submit" value="Generate free feed URL"></p>
+			<div id="result" />
 		</form>
 	</div>
+	<script>
+		$("#generate").submit(function(event) {
+			event.preventDefault();
+			var $form = $(this),
+				url = $form.find('input[name="url"]').val().trim(),
+				user = $form.find('input[name="user"]').val().trim(),
+				pwd = $form.find('input[name="pwd"]').val().trim(),
+				action = $form.attr('action');
+				
+			$.post(action, { url: url, user: user, pwd: pwd },
+				function(data) {
+					$("#result").empty().append(
+						$(location).attr("protocol") + "//" +
+						$(location).attr('host') +
+						data);
+				}
+			);
+		});
+	</script>
+	
     <div id="copyright">
         <p>&copy; 2012 Develer Srl - PIVA 02342950488 - <span class="note">All our feeds are belong to us</span></p>
         <p>
