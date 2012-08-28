@@ -19,17 +19,40 @@ b64enc = base64.urlsafe_b64encode
 b64dec = base64.urlsafe_b64decode
 
 def _encrypt(data, salt):
+    # Requirements:
+    #   1. Need to crypt both username and password
+    #   2. Do not disclose real length of either (otherwise dict-bruteforce is easy)
+    #   3. Local per-installation key
+    #   4. Resistance to chosen-plaintext (anybody can create URLs with this system)
+    # 
+    # To satisfy 2, we go with a stream cipher with random padding. We need
+    # a salt, otherwise two URLs on the same installation would provide the same
+    # stream cipher sequence, and thus being very simple to crack.
+    #
+    # PyCrypto only provides RC4, which is weak and is better used with a fully random 
+    # key, and discarding the initial output.
+    #
+    # Given a local installation key L1-L12, we end up with:
+    # 1) Generate a 20-byte salt S.
+    # 2) Generate K1 = HMAC-SHA1(L1, S)
+    # 3) Generate K[N] = HMAC-SHA1(L[N], K[N-1])
+    #    This basically diffuses S into K, in a way that shouldn't be easy to
+    #    tweak or control.
+    # 4) Initialize RC4 with K1-K12.
+    # 5) Dscard the first 256 bytes of RC4 output.
+    # 6) Encrypt the plaintext prepended with a random-length padding (with \0 as separator).        
     from Crypto.Cipher import ARC4
     from Crypto.Hash import HMAC, SHA
     key = []
     for i in range(12):
         key.append(HMAC.new(SECRET[i*20:i*20+20], salt, digestmod=SHA).digest())
+        salt = key[-1]
     rc4 = ARC4.new("".join(key))
     rc4.encrypt("\0"*256)
     return rc4.encrypt(data)
 
 def encrypt(data, salt):
-    rd = ord(os.urandom(1)) % 16
+    rd = (ord(os.urandom(1)) % 16) + 4
     rd = os.urandom(rd) if rd else ""
     return _encrypt(rd+"\0"+data, salt)
 def decrypt(data, salt):
