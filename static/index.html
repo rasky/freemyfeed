@@ -86,7 +86,7 @@
 			}
 			
 		#result { 
-			display: block;
+			display: none;
 			color: green;
 			font-weight: bold;
 		}
@@ -156,12 +156,7 @@
 				user = $form.find('input[name="user"]').val().trim(),
 				pwd = $form.find('input[name="pwd"]').val().trim(),
 				action = $form.attr('action');
-			/*	
-			$("#result a").click(function (event) {
-				event.preventDefault();
-				alert("URL copied into clipboard");
-			})
-			*/
+
 			$.post(action, { url: url, user: user, pwd: pwd },
 				function(data) {
 					$("#resurl").val(
