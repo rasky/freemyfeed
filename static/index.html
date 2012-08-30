@@ -21,11 +21,86 @@
         h1 img { margin-right: 1em; vertical-align: bottom; border: 0;}
         h3 { width: 80%; margin-left: 10%; margin-top: 2.5em; color: gray; font-size: 16px;
 			font-style: italic }
+
+			form {
+				width: 80%; margin-left: 10%;
+				background: rgb(245,175,118); /* Old browsers */
+				background: -moz-linear-gradient(top,  rgba(245,175,118,1) 0%, rgba(244,225,210,1) 100%); /* FF3.6+ */
+				background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(245,175,118,1)), color-stop(100%,rgba(244,225,210,1))); /* Chrome,Safari4+ */
+				background: -webkit-linear-gradient(top,  rgba(245,175,118,1) 0%,rgba(244,225,210,1) 100%); /* Chrome10+,Safari5.1+ */
+				background: -o-linear-gradient(top,  rgba(245,175,118,1) 0%,rgba(244,225,210,1) 100%); /* Opera 11.10+ */
+				background: -ms-linear-gradient(top,  rgba(245,175,118,1) 0%,rgba(244,225,210,1) 100%); /* IE10+ */
+				background: linear-gradient(to bottom,  rgba(245,175,118,1) 0%,rgba(244,225,210,1) 100%); /* W3C */
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5af76', endColorstr='#f4e1d2',GradientType=0 ); /* IE6-9 */
+
+
+}
+			form fieldset {
+			  margin-bottom: 10px;
+			
+			}
+			form legend {
+			  padding: 0 2px;
+			  font-weight: bold;
+			}
+			form label {
+			  display: inline-block;
+			  line-height: 1.8;
+			  vertical-align: top;
+			}
+			form fieldset ol {
+			  margin: 0;
+			  padding: 0;
+			}
+			form fieldset li {
+			  list-style: none;
+			  padding: 5px;
+			  margin: 0;
+			}
+			form fieldset fieldset {
+			  border: none;
+			  margin: 3px 0 0;
+			}
+			form fieldset fieldset legend {
+			  padding: 0 0 5px;
+			  font-weight: normal;
+			}
+			form fieldset fieldset label {
+			  display: block;
+			  width: auto;
+			}
+			form em {
+			  font-weight: bold;
+			  font-style: normal;
+			  color: #f00;
+			}
+			form label {
+			  width: 160px; /* Width of labels */
+			}
+			form fieldset fieldset label {
+			  margin-left: 123px; /* Width plus 3 (html space) */
+			}
+
+			form fieldset.buttons {
+				text-align: center;
+			}
+			
+		#result { 
+			display: block;
+			color: green;
+			font-weight: bold;
+		}
+		#resurl {
+			margin-left: 10px;
+			width: 60%;
+		}
+
         p { width: 80%; margin-left: 10%; }
         #copyright { text-align: center; font-size: 80%; border-top: 1px solid; margin: 3em 7em 0 7em; }
         #copyright .note { font-style: italic; }
         </style>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+		<script src="jquery.zclip.min.js"></script>
     </head>
 <body>    
     <h1><a href="http://www.develer.com/" title="Develer"><img src="https://www.develer.com/pics/develer_logo.png" width="30%" alt="Develer" /></a> Develer FreeMyFeed</h1>
@@ -47,24 +122,33 @@
 			<fieldset>
 			<ol>
 				<li>
-					<label>Feed URL:</label>
-					<input type="text" name="url" value="" size="30" />
+					<label>Protected feed URL:</label>
+					<input type="text" name="url" value="" size="60" />
 				</li>
 				<li>
 					<label>Username:</label>
-					<input type="text" name="user" value="" size="15" />
+					<input type="text" name="user" value="" size="20" />
 				</li>
 				<li>
 					<label>Password:</label>
-					<input type="password" name="pwd" value="", size="15" />
+					<input type="password" name="pwd" value="", size="20" />
 				</li>
 			</ol>
 			</fieldset>
-			<input type="submit" value="Generate free feed URL">
+			<fieldset class="buttons">
+				<input type="submit" value="Generate free feed URL">
+				<input type="reset" value="Clear">
+			</fieldset>
 		</form>
-		<div id="result" />
+		<div id="result">
+			<p>Your free feed URL is: <input readonly="readonly" id="resurl"/> <a href="">Copy</a></p>
+		</div>
 	</div>
 	<script>
+		$("#generate input:reset").click(function(event) {
+			$("#result").hide();
+		})
+		
 		$("#generate").submit(function(event) {
 			event.preventDefault();
 			var $form = $(this),
@@ -72,13 +156,23 @@
 				user = $form.find('input[name="user"]').val().trim(),
 				pwd = $form.find('input[name="pwd"]').val().trim(),
 				action = $form.attr('action');
-				
+			/*	
+			$("#result a").click(function (event) {
+				event.preventDefault();
+				alert("URL copied into clipboard");
+			})
+			*/
 			$.post(action, { url: url, user: user, pwd: pwd },
 				function(data) {
-					$("#result").empty().append(
+					$("#resurl").val(
 						$(location).attr("protocol") + "//" +
 						$(location).attr('host') +
 						data);
+					$("#result a").zclip({
+						path: "/ZeroClipboard.flv",
+						copy: $("#resurl").val()
+					});
+					$("#result").show();
 				}
 			);
 		});
