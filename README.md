@@ -10,3 +10,8 @@ server where you installed this software.
 No data is stored on the server; the URL contains encrypted credentials,
 so the server just needs to decrypt them, access the original feed, and serve
 it back.
+
+Live demo
+=========
+http://freemyfeed.develer.com
+
