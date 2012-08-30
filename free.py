@@ -8,7 +8,7 @@ root_dir = os.path.abspath(os.path.dirname(__file__))
 static_dir = root_dir + "/static"
 
 try:
-    SECRET = open("secret.key").read()
+    SECRET = open(os.path.join(root_dir, "secret.key")).read()
     if len(SECRET) != 256:
         raise IOError
 except IOError:
@@ -100,5 +100,6 @@ class FreeMyFeed(object):
         # Serve the contents
         return response.read()
     feed.exposed = True
-        
-cherrypy.quickstart(FreeMyFeed())
+
+if __name__ == "__main__":
+    cherrypy.quickstart(FreeMyFeed())
