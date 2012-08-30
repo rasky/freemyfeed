@@ -163,11 +163,11 @@
 						$(location).attr("protocol") + "//" +
 						$(location).attr('host') +
 						data);
+					$("#result").show();
 					$("#result a").zclip({
-						path: "/ZeroClipboard.flv",
+						path: "ZeroClipboard.flv",
 						copy: $("#resurl").val()
 					});
-					$("#result").show();
 				}
 			);
 		});
