@@ -13,7 +13,7 @@ try:
         raise IOError
 except IOError:
     print "secret.key not found or invalid; generate with:"
-    print "dd if=/dev/random of=secret.key count=1 bs=256"
+    print "dd if=/dev/urandom of=secret.key count=256 bs=1"
     sys.exit(1)
 
 b64enc = base64.urlsafe_b64encode
